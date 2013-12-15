@@ -1,0 +1,61 @@
+#include <iostream>
+ 
+using namespace std;
+ 
+struct covjek{
+    
+    char pre_ime[18],spol;
+    int dan, mjesec, godina;
+    int ai, bi, ci, di, ei;
+};
+ 
+struct element{
+    covjek pacijent;
+    element *sljedeci;
+};
+ 
+struct red{
+    element *celo, *zacelje;
+};
+ 
+typedef red tred;
+typedef element *telement;
+ 
+ 
+covjek FrontQ(tred *Q)
+{
+    return Q->celo->sljedeci->pacijent;
+} 
+ 
+void EnQueueQ(covjek x, tred *Q)
+{
+    element *novi = new element;
+    telement posljednji;
+    novi->pacijent = x;
+    novi->sljedeci = NULL;
+    posljednji = Q->zacelje;
+    posljednji->sljedeci = novi;
+    Q->zacelje = novi;
+} 
+ 
+void DeQueueQ(tred *Q)
+{
+    telement prvi;
+    prvi = Q->celo;
+    Q->celo = prvi->sljedeci;
+    delete prvi;
+} 
+ 
+void InitQ(tred *Q)
+{
+    telement glava = new element;
+    glava->sljedeci = NULL;
+    Q->celo = glava;
+    Q->zacelje = glava;
+} 
+ 
+bool IsEmptyQ(tred *Q)
+{
+    if(Q->celo == Q->zacelje)  return true;
+    else  return false;
+}
