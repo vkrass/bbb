@@ -1,0 +1,47 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+struct covjek{
+    char pre_ime[18],spol;
+    int ai,bi,ci,di,ei,dan,mjesec,godina;    
+};
+
+struct red{
+    covjek pacijent[1000];
+    int front,rear;
+};
+
+int AddOne(int n){
+    return (n+1)%100;
+    }
+
+void InitQ(red *r){
+    r->front=0;
+    r->rear=999;
+}
+
+bool IsEmptyQ(red *r){
+    if(AddOne(r->rear)==r->front) return true;
+    else return false;
+    }
+    
+covjek FrontQ(red *r){
+    return r->pacijent[r->front];
+    }
+
+void EnQueueQ(covjek p, red *r){
+    int n;
+    if(r->rear==999) n=0;
+    else n=r->rear+1;
+    r->pacijent[n] = p;
+    r->rear = n;
+    }
+
+void DeQueueQ(red *r){
+    if(IsEmptyQ(r)) cout << "Red je prazan!" << endl;
+    else{
+        if(r->front==999) r->front=0;
+        else r->front++;
+        }
+    }
