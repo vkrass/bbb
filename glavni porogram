@@ -1,0 +1,232 @@
+#include <iostream>
+//#include "Red_polje.h"
+ #include "Red_pokazivac.h"
+
+using namespace std;
+//a
+void gene(tred *Q){
+        int broj;
+        cout<<"Koliko uredenih petorki zelite generirati?"<<endl;
+        cin>>broj;
+        covjek novi;
+        for(int i=0;i<broj;i++){
+            novi.ai=rand()%250+50;
+            novi.bi=rand()%250+50;
+            novi.ci=rand()%5+1;
+            if(novi.ci==1){
+                rand();
+                novi.di=rand()%2+1;
+                novi.ei=rand()%5+2;                   
+            }
+            else if(novi.ci==2){
+                rand();
+                novi.di=rand()%4+1;
+                novi.ei=rand()%5+1;                   
+            }
+            else if(novi.ci==3){
+                rand();
+                novi.di=rand()%4+1;
+                do{
+                    novi.ei=rand()%5+2;                   
+                }while (novi.ei==4);
+            }
+            else if(novi.ci==4){
+                rand();
+                novi.di=rand()%4+1;
+                do{
+                    novi.ei=rand()%5+2;                   
+                }while (novi.ei==4);
+            }
+            else if(novi.ci==5){
+                rand();
+                novi.di=rand()%4+1;
+                novi.ei=rand()%5+1;                   
+            }
+            EnQueueQ(novi,Q);
+        }        
+}
+//b
+void ispis_pac(covjek covjek){
+        cout<<"Ime i prezime:"<<covjek.pre_ime<<endl;
+        cout<<"Datum rodjenja:"<<covjek.dan<<"."
+        <<covjek.mjesec<<"."<<covjek.godina<<endl;
+        cout<<"Spol:"<<covjek.spol<<endl;
+        cout<<"Prioritet:";
+        if(covjek.ci==1) 
+            cout<<"Hitni slucaj "<<endl;
+        if(covjek.ci==2) 
+            cout<<"Invalidi "<<endl;
+        if(covjek.ci==3) 
+            cout<<"Trudnice "<<endl;
+        if(covjek.ci==4)
+             cout<<"Djeca mladja od 6 god "<<endl;
+        if(covjek.ci==5) 
+            cout<<"Ostali "<<endl;
+        cout<<"Usluga:";
+        if(covjek.di==1)
+             cout<<"Pregled "<<endl;
+        if(covjek.di==2) 
+            cout<<"Previjanje "<<endl;
+        if(covjek.di==3)
+             cout<<"Recepti "<<endl;
+        if(covjek.di==4)
+             cout<<"Uputnice "<<endl;
+        cout<<"Ordinacija: ";
+        if(covjek.ei==1) 
+            cout<<"Obiteljski lijecnik "<<endl;
+        if(covjek.ei==2) 
+            cout<<"Oftamologija "<<endl;
+        if(covjek.ei==3) 
+            cout<<"Dermatovenerologija "<<endl;
+        if(covjek.ei==4) 
+            cout<<"Ginekologija "<<endl;
+        if(covjek.ei==5)
+             cout<<"Urologija "<<endl;
+            cout << "\n\n";
+        
+}
+void prioriteti(tred *gen){
+        tred *strani=new tred;
+        InitQ(strani);
+        tred *prioritet=new tred;
+        InitQ(prioritet);
+        for(int i=1; i<=5; i++){
+                    while (!IsEmptyQ(gen)) {
+                    if(FrontQ(gen).ci == i){
+                    EnQueueQ(FrontQ(gen),prioritet);
+                    DeQueueQ(gen);
+                    }           
+                    else{
+                    EnQueueQ(FrontQ(gen),strani); 
+                     DeQueueQ(gen);
+                    }  
+                }
+                    while (!IsEmptyQ(strani)){
+                    EnQueueQ(FrontQ(strani),gen);
+                    DeQueueQ(strani);
+                    }
+                         
+        }
+        while (!IsEmptyQ(prioritet)){
+                EnQueueQ(FrontQ(prioritet),gen);
+                DeQueueQ(prioritet);
+            } 
+        delete strani;
+        delete prioritet;        
+}
+
+
+void is(tred *Q){
+                tred *pomocni= new tred;
+                InitQ(pomocni);
+                while(!IsEmptyQ(Q)){
+                EnQueueQ(FrontQ(Q),pomocni);
+                ispis_pac(FrontQ(Q));
+                DeQueueQ(Q);
+                }
+                while(!IsEmptyQ(pomocni))  {
+                        EnQueueQ(FrontQ(pomocni),Q);
+                        DeQueueQ(pomocni);
+                }
+}
+int br_ele=0;
+void unos(tred *generirani, tred *pomoc){
+        covjek n;        
+        while(!IsEmptyQ(generirani)){ 
+                n=FrontQ(generirani); 
+                n.pre_ime[0]=char(rand()%26+65);
+                for (int j=1;j<=6;j++)
+                n.pre_ime[j]=char(rand()%26+97);
+                n.pre_ime[7]=' ';
+                n.pre_ime[8]=char(rand()%26+65);
+                for (int j=9;j<=16;j++)
+                n.pre_ime[j]=char(rand()%26+97);
+                n.pre_ime[17]='\0';                
+                n.dan=rand()%31+1;        
+                n.mjesec=rand()%12+1;
+                if(n.ci==4) n.godina=2013-rand()%6;
+                else {
+                if(n.ci==3)n.godina=1960+rand()%35;
+                else n.godina=1930+rand()%83; 
+                }
+                int sp=rand()%2+1;
+                if(sp==1) n.spol = 'M';
+                else n.spol='Z';        
+                br_ele++;
+                EnQueueQ(n,pomoc);
+                DeQueueQ(generirani);        
+        }
+        cout<<"\nCekaona prema prioritetu:\n\n"<<endl;
+        prioriteti(pomoc);
+        is(pomoc);
+        cout<<endl;
+        covjek tekuci;
+        cout<<"Pacijentice i oftamologija \n"<<endl;
+        for(int i=0;i<br_ele;i++){
+                tekuci=FrontQ(pomoc);
+                if(tekuci.godina<1988&&tekuci.spol=='Z'&&tekuci.ei==2) 
+                ispis_pac(tekuci);
+                EnQueueQ(tekuci,pomoc);        
+                DeQueueQ(pomoc);
+        
+        }
+}
+//c
+void invalid(tred *gen){
+  if(IsEmptyQ(gen))  return;
+  covjek n;
+  tred *inv= new tred;
+  InitQ(inv);
+  while(!IsEmptyQ(gen)){
+        n=FrontQ(gen);
+        DeQueueQ(gen);
+        EnQueueQ(n,inv);                
+        }
+  while(!IsEmptyQ(inv)){
+        n=FrontQ(inv);
+        if(n.bi==2&&n.godina<1963&&n.ei==1&&n.ci==2){
+            DeQueueQ(inv);
+            }
+        else EnQueueQ(n,gen);
+        DeQueueQ(inv);        
+        }
+        is(gen);
+}
+
+int main(){
+    int n;
+    srand(time(0));
+    rand();
+    tred *pomoc=new tred;
+    tred *gen= new tred;
+    InitQ(pomoc);
+    InitQ(gen);
+      
+    
+    do{
+        cout << "1. Generiranje brojeva" << endl
+             << "2. Dodavanje zapisa o pacijentima u red" << endl
+             << "3. Brisanje invalida " << endl
+             << "9. Izlaz iz programa" << endl << endl;
+        cin >> n;
+        
+        switch(n){
+            case 1:
+                gene(gen);
+                break;
+            case 2:
+                unos(gen,pomoc);
+                is(gen);
+                break;
+            case 3:
+                
+                isp(gen);
+                break;
+            default:
+                break;
+          
+            }
+    }while(n!=9);
+    
+    return 0;
+}
